@@ -30,7 +30,7 @@ Das Projekt ist für einen **LOLIN/WEMOS D1 mini Pro (ESP8266)** ausgelegt.
 - 940-nm-IR-LED
 - NPN-Transistor, z. B. 2N2222, BC337 oder kompatibel
 - 1-kΩ-Widerstand für die Transistorbasis
-- 220-Ω-Widerstand für die IR-LED
+- 50-Ω-Widerstand für die IR-LED (nur mit dafür ausgelegter IR-LED und passendem Transistor)
 - Steckbrett und Jumperkabel
 - USB-Datenkabel
 
@@ -40,7 +40,7 @@ Der Empfänger muss mit 3,3 V kompatibel sein. Die Pin-Reihenfolge von IR-Empfä
 
 ![IR-Tool Schaltplan](docs/schematic.svg)
 
-Die IR-LED wird nicht direkt am ESP8266-GPIO betrieben. Der GPIO steuert nur die Transistorbasis. Die LED bekommt ihren Strom über einen Vorwiderstand. Alle GND-Anschlüsse müssen verbunden sein.
+Die IR-LED wird nicht direkt am ESP8266-GPIO betrieben. Der GPIO steuert nur die Transistorbasis. Die LED bekommt ihren Strom über einen 50-Ω-Vorwiderstand. Bei 5 V können dabei ungefähr 70–75 mA Impulsstrom entstehen. Das ist nur zulässig, wenn Datenblatt und Transistor diesen Pulsstrom erlauben. Alle GND-Anschlüsse müssen verbunden sein.
 
 Eine ausführliche Tabelle mit den Anschlüssen steht in [`docs/VERDRAHTUNG.md`](docs/VERDRAHTUNG.md).
 
@@ -69,6 +69,7 @@ Die Firmware verwendet LittleFS. Falls die verwendete ESP8266-Core-Version nach 
 ## Sicherheit und Grenzen
 
 - Die IR-LED niemals ohne Vorwiderstand betreiben.
+- 50 Ω ist kein allgemeiner Standardwert: Bei einer gewöhnlichen 20-mA-IR-LED ist dieser Wert zu klein und kann die LED zerstören.
 - Bei einer stärkeren IR-Sendestufe Strom und Transistor nach Datenblatt dimensionieren.
 - Nicht direkt in die Augen leuchten.
 - Der ESP8266 sendet ein eigenes WLAN; er verbindet sich nicht automatisch mit deinem Heimnetz.
