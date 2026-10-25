@@ -1,0 +1,12 @@
+# Arduino IDE
+*.hex
+*.elf
+*.bin
+*.map
+build/
+arduino_build_*/
+
+# Betriebssystem
+Thumbs.db
+.DS_Store
+
