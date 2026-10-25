@@ -6,19 +6,35 @@
 #include <IRsend.h>
 #include <IRutils.h>
 
-// Anschlüsse deines D1 mini Pro
-const uint16_t IR_RECEIVE_PIN = D5;  // GPIO14
-const uint16_t IR_SEND_PIN    = D6;  // GPIO12
+// Anschlüsse des D1 mini Pro. Bei einer anderen Verdrahtung hier ändern.
+const uint16_t IR_RECEIVE_PIN = D5;  // GPIO14: OUT des IR-Empfängers
+const uint16_t IR_SEND_PIN    = D6;  // GPIO12: Basiswiderstand der Sendestufe
 
-// Eigenes WLAN des ESP8266
+// Eigenes WLAN des ESP8266. Das Passwort muss mindestens 8 Zeichen lang sein.
+// Für ein anderes WLAN-Namen oder Passwort nur diese beiden Werte ändern.
 const char* AP_SSID = "ESP-IR";
 const char* AP_PASSWORD = "12345678";  // mindestens 8 Zeichen
 
+// Maximale Anzahl aufgezeichneter Impulse. Erhöhen benötigt mehr RAM.
 const uint16_t RAWBUF_SIZE = 1024;
+
+// Anzahl der dauerhaft verfügbaren Speicherplätze.
+// Das Webinterface ist aktuell auf 5 sichtbare Slot-Tasten ausgelegt.
 const uint8_t SLOT_COUNT = 5;
+
+// Sendedauer: 2000 ms = 2 Sekunden. Für z. B. 5 Sekunden auf 5000 ändern.
+// Das Signal wird während dieser Zeit immer wieder als vollständiger IR-Rahmen gesendet.
 const uint16_t SEND_DURATION_MS = 2000;
+
+// Pause zwischen zwei IR-Rahmen. Kleiner = häufigere Wiederholung,
+// größer = mehr Abstand. 35 ms entspricht vielen Fernbedienungen gut.
 const uint16_t SEND_GAP_MS = 35;
+
+// Kennung und Größe des Dateikopfs der LittleFS-Slots.
 const uint32_t SLOT_MAGIC = 0x49525332;  // "IRS2"
+const size_t SLOT_HEADER_SIZE = sizeof(uint32_t) + sizeof(uint16_t) +
+                                sizeof(uint16_t) + sizeof(uint16_t) +
+                                sizeof(uint16_t) + sizeof(uint64_t);
 uint16_t rawData[RAWBUF_SIZE];
 uint16_t rawLength = 0;
 uint16_t carrierFrequency = 38;
@@ -86,7 +102,7 @@ const char MAIN_PAGE[] PROGMEM = R"rawliteral(
         (s.saved?(s.persistent?'Dauerhaft gespeichert':'Aufgenommen, noch nicht dauerhaft gespeichert')+
         ' ('+s.length+' Impulse)':'Noch kein Signal gespeichert');
       document.getElementById('details').textContent=s.saved?
-        'Protokoll: '+s.protocol+'  ·  Frequenz: '+s.frequency+' kHz  ·  Länge: '+s.length+' Impulse':'';
+        'Protokoll: '+s.protocol+'  ·  Frequenz: '+s.frequency+' kHz  ·  Länge: '+s.length+' Impulse  ·  Sendedauer: '+(s.sendDuration/1000)+' s':'';
       document.getElementById('send').disabled=!s.saved||s.recording;
       document.getElementById('save').disabled=!s.saved||s.recording||s.persistent;
       document.getElementById('record').disabled=s.recording;
@@ -114,7 +130,8 @@ void handleStatus() {
                 ",\"slot\":" + String(activeSlot) +
                 ",\"length\":" + String(rawLength) +
                 ",\"frequency\":" + String(carrierFrequency) +
-                ",\"protocol\":\"" + protocolName + "\"}";
+                ",\"protocol\":\"" + protocolName + "\"" +
+                ",\"sendDuration\":" + String(SEND_DURATION_MS) + "}";
   server.send(200, "application/json", json);
 }
 
@@ -136,7 +153,7 @@ String slotPath(uint8_t slot) {
 
 bool loadSlot(uint8_t slot) {
   File file = LittleFS.open(slotPath(slot), "r");
-  if (!file || file.size() < 24) return false;
+  if (!file || file.size() < SLOT_HEADER_SIZE) return false;
 
   uint32_t magic = 0;
   uint16_t storedLength = 0;
@@ -249,7 +266,7 @@ void handleSend() {
       delay(SEND_GAP_MS);
     }
   } while (millis() - sendStart < SEND_DURATION_MS);
-  server.send(200, "text/plain", "Signal 2 Sekunden gesendet");
+  server.send(200, "text/plain", "Signal " + String(SEND_DURATION_MS) + " ms gesendet");
 }
 
 void setup() {
