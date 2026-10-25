@@ -66,6 +66,28 @@ Die Firmware verwendet LittleFS. Falls die verwendete ESP8266-Core-Version nach 
 7. **Signal dauerhaft speichern** drücken.
 8. Mit **Gespeichertes Signal senden** wird das Signal etwa zwei Sekunden lang wiederholt – ähnlich wie eine gehaltene Taste.
 
+## Einstellungen im Code
+
+Die wichtigsten Einstellungen stehen am Anfang von `esp_ir_webinterface.ino`:
+
+| Konstante | Standardwert | Änderung |
+|---|---:|---|
+| `SEND_DURATION_MS` | `2000` | Sendedauer in Millisekunden; `5000` ergibt ca. 5 Sekunden |
+| `SEND_GAP_MS` | `35` | Pause zwischen zwei IR-Rahmen in Millisekunden |
+| `SLOT_COUNT` | `5` | Anzahl der Speicherplätze; das Webinterface zeigt aktuell 5 Tasten |
+| `IR_RECEIVE_PIN` | `D5` | Eingang des IR-Empfängers |
+| `IR_SEND_PIN` | `D6` | Ausgang zur Transistor-Sendestufe |
+| `AP_SSID` | `ESP-IR` | Name des vom ESP erzeugten WLANs |
+| `AP_PASSWORD` | `12345678` | WLAN-Passwort, mindestens 8 Zeichen |
+
+Beispiel: Für eine Sendedauer von 10 Sekunden diese Zeile ändern:
+
+```cpp
+const uint16_t SEND_DURATION_MS = 10000;
+```
+
+Danach den Sketch erneut kompilieren und hochladen. Die Sendedauer wird im Webinterface ebenfalls automatisch aus diesem Wert angezeigt.
+
 ## Sicherheit und Grenzen
 
 - Die IR-LED niemals ohne Vorwiderstand betreiben.
