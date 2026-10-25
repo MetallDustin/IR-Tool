@@ -29,7 +29,7 @@ D6 ── 1 kΩ ──> Basis        2N2222 / BC337
                  Kollektor ── Kathode IR-LED
 GND ──────────── Emitter
 
-5V/VU ── 220 Ω ──> Anode IR-LED
+5V/VU ── 50 Ω ──> Anode IR-LED
 ```
 
 Wichtig:
@@ -40,9 +40,13 @@ Wichtig:
 - GND vom Empfänger, ESP8266 und Transistor muss gemeinsam verbunden sein.
 - Den GPIO nicht direkt mit der LED verbinden.
 
+## Stromwarnung bei 50 Ω
+
+Bei 5 V, etwa 1,2 V LED-Flussspannung und einem gesättigten Transistor ergeben 50 Ω ungefähr 70–75 mA Spitzenstrom. Das darf nur verwendet werden, wenn die konkrete IR-LED diesen Pulsstrom und die verwendete Wiederholrate verträgt. Für eine gewöhnliche 20-mA-IR-LED ist 50 Ω zu klein; dann einen größeren Widerstand verwenden.
+
 ## Alternative mit 3,3-V-Versorgung
 
-Wenn die Sendestufe vollständig mit 3,3 V betrieben wird, kann der LED-Vorwiderstand ebenfalls an `3V3` angeschlossen werden. Die LED ist dann meist weniger stark. Der 220-Ω-Widerstand ist ein konservativer Startwert; bei einer leistungsstärkeren LED muss der zulässige Dauer- und Pulsstrom aus dem Datenblatt beachtet werden.
+Wenn die Sendestufe vollständig mit 3,3 V betrieben wird, kann der LED-Vorwiderstand ebenfalls an `3V3` angeschlossen werden. Die LED ist dann meist weniger stark. Der zulässige Dauer- und Pulsstrom muss immer aus dem Datenblatt beachtet werden.
 
 ## Schaltplan
 
