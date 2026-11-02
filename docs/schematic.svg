@@ -41,7 +41,7 @@
   <rect x="825" y="170" width="220" height="125" class="power"/>
   <text x="935" y="210" text-anchor="middle" class="label">IR LED</text>
   <text x="935" y="245" text-anchor="middle" class="pin">Anode ← 50 Ω ← 5V/VU</text>
-  <text x="935" y="275" text-anchor="middle" class="pin">Kathode → NPN C</text>
+  <text x="935" y="275" text-anchor="middle" class="pin">Cathode → NPN C</text>
   <rect x="55" y="555" width="990" height="75" class="power"/>
   <text x="550" y="600" text-anchor="middle" class="label">Common ground: ESP GND = receiver GND = transistor emitter</text>
 

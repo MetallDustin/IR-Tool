@@ -27,7 +27,7 @@ The project is designed for a **LOLIN/WEMOS D1 mini Pro (ESP8266)**.
 
 - ESP8266 D1 mini Pro
 - 38 kHz IR receiver, such as VS1838B or TSOP38238
-- 940-nm-IR-LED
+- 940 nm IR LED
 - NPN transistor, such as 2N2222, BC337, or equivalent
 - 1 kΩ resistor for the transistor base
 - 50 Ω resistor for the IR LED (only with an IR LED and transistor rated for it)

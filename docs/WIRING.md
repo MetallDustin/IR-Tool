@@ -25,11 +25,11 @@ The `OUT/GND/VCC` order is not the same on all modules. The labeling or datashee
 ## IR driver with an NPN transistor
 
 ```text
-D6 ── 1 kΩ ──> Basis        2N2222 / BC337
-                 Kollektor ── Kathode IR-LED
+D6 ── 1 kΩ ──> Base        2N2222 / BC337
+                 Collector ── IR LED cathode
 GND ──────────── Emitter
 
-5V/VU ── 50 Ω ──> Anode IR-LED
+5V/VU ── 50 Ω ──> IR LED anode
 ```
 
 Important:

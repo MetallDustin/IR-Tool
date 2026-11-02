@@ -295,9 +295,9 @@ void setup() {
   Serial.println("ESP-IR started");
   Serial.print("Wi-Fi: ");
   Serial.println(AP_SSID);
-  Serial.print("Passwort: ");
+  Serial.print("Password: ");
   Serial.println(AP_PASSWORD);
-  Serial.println("Webinterface: http://192.168.4.1");
+  Serial.println("Web interface: http://192.168.4.1");
 }
 
 void loop() {
