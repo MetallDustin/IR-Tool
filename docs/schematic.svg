@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="680" viewBox="0 0 1100 680">
-  <title>IR-Tool Schaltplan für ESP8266 D1 mini Pro</title>
-  <desc>D1 mini Pro mit IR-Empfänger an D5 und IR-LED über NPN-Transistor an D6</desc>
+  <title>IR-Tool schematic for ESP8266 D1 mini Pro</title>
+  <desc>D1 mini Pro with an IR receiver on D5 and an IR LED driven by an NPN transistor on D6</desc>
   <rect width="1100" height="680" fill="#ffffff"/>
   <style>
     .wire{stroke:#1f2937;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -14,36 +14,36 @@
     .small{font-size:16px}
     .pin{font-size:18px;font-weight:bold}
   </style>
-  <text x="40" y="48" class="title">IR-Tool – D1 mini Pro / IR-Empfang und Senden</text>
-  <text x="40" y="78" class="small">Prinzipdarstellung – Pinbelegung des konkreten Empfängers und Transistors prüfen.</text>
+  <text x="40" y="48" class="title">IR-Tool – D1 mini Pro / IR reception and transmission</text>
+  <text x="40" y="78" class="small">Conceptual diagram – check the pinout of the specific receiver and transistor.</text>
 
   <rect x="55" y="170" width="300" height="300" class="box"/>
   <text x="205" y="215" text-anchor="middle" class="label">ESP8266 D1 mini Pro</text>
   <text x="205" y="260" text-anchor="middle" class="pin">D5 / GPIO14  ← IR OUT</text>
-  <text x="205" y="300" text-anchor="middle" class="pin">D6 / GPIO12  → Senden</text>
+  <text x="205" y="300" text-anchor="middle" class="pin">D6 / GPIO12  → Transmit</text>
   <text x="205" y="355" text-anchor="middle" class="pin">3V3</text>
   <text x="205" y="395" text-anchor="middle" class="pin">5V / VU</text>
   <text x="205" y="435" text-anchor="middle" class="pin">GND</text>
 
   <rect x="490" y="125" width="250" height="180" class="part"/>
-  <text x="615" y="170" text-anchor="middle" class="label">IR-Empfänger</text>
+  <text x="615" y="170" text-anchor="middle" class="label">IR receiver</text>
   <text x="615" y="215" text-anchor="middle" class="pin">VCC → 3V3</text>
   <text x="615" y="250" text-anchor="middle" class="pin">OUT → D5</text>
   <text x="615" y="285" text-anchor="middle" class="pin">GND → GND</text>
 
   <rect x="470" y="430" width="155" height="90" class="part"/>
   <text x="548" y="468" text-anchor="middle" class="label">1 kΩ</text>
-  <text x="548" y="500" text-anchor="middle" class="small">Basiswiderstand</text>
+  <text x="548" y="500" text-anchor="middle" class="small">Base resistor</text>
   <rect x="700" y="400" width="210" height="150" class="part"/>
   <text x="805" y="440" text-anchor="middle" class="label">NPN</text>
   <text x="805" y="475" text-anchor="middle" class="pin">2N2222 / BC337</text>
   <text x="805" y="510" text-anchor="middle" class="small">E → GND, C → LED</text>
   <rect x="825" y="170" width="220" height="125" class="power"/>
-  <text x="935" y="210" text-anchor="middle" class="label">IR-LED</text>
+  <text x="935" y="210" text-anchor="middle" class="label">IR LED</text>
   <text x="935" y="245" text-anchor="middle" class="pin">Anode ← 50 Ω ← 5V/VU</text>
-  <text x="935" y="275" text-anchor="middle" class="pin">Kathode → NPN C</text>
+  <text x="935" y="275" text-anchor="middle" class="pin">Cathode → NPN C</text>
   <rect x="55" y="555" width="990" height="75" class="power"/>
-  <text x="550" y="600" text-anchor="middle" class="label">Gemeinsame Masse: ESP GND = Empfänger GND = Transistor Emitter</text>
+  <text x="550" y="600" text-anchor="middle" class="label">Common ground: ESP GND = receiver GND = transistor emitter</text>
 
   <path d="M355 260 H410 V250 H490" class="wire"/>
   <path d="M355 300 H420 V475 H470" class="wire"/>
@@ -58,6 +58,5 @@
   <circle cx="355" cy="260" r="6" fill="#1f2937"/><circle cx="355" cy="300" r="6" fill="#1f2937"/>
   <circle cx="355" cy="355" r="6" fill="#1f2937"/><circle cx="355" cy="395" r="6" fill="#1f2937"/>
   <circle cx="355" cy="435" r="6" fill="#1f2937"/>
-  <text x="70" y="655" class="small">Hinweis: Die Schaltung ist für eine USB-versorgte Platine mit 5V/VU und eine strombegrenzte IR-LED ausgelegt.</text>
+  <text x="70" y="655" class="small">Note: This circuit is designed for a USB-powered board with 5V/VU and a current-limited IR LED.</text>
 </svg>
-

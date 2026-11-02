@@ -1,52 +1,51 @@
-# Inbetriebnahme und Funktionstest
+# Commissioning and functional test
 
-## Vor dem Einschalten
+## Before powering on
 
-- [ ] IR-Empfänger ist an 3V3, GND und D5 angeschlossen.
-- [ ] D6 geht nur über den Basiswiderstand zum Transistor.
-- [ ] IR-LED besitzt einen Vorwiderstand.
-- [ ] Transistor-Pinbelegung wurde anhand des Datenblatts geprüft.
-- [ ] Alle GND-Anschlüsse sind verbunden.
+- [ ] IR receiver is connected to 3V3, GND, and D5.
+- [ ] D6 is connected to the transistor only through the base resistor.
+- [ ] IR LED has a series resistor.
+- [ ] Transistor pinout was checked against the datasheet.
+- [ ] All GND connections are common.
 
-## Firmware-Test
+## Firmware test
 
-1. Sketch kompilieren.
-2. Auf den D1 mini Pro hochladen.
-3. Seriellen Monitor mit 115200 Baud öffnen.
-4. Prüfen, ob `ESP-IR gestartet` erscheint.
-5. Mit `ESP-IR` verbinden und `http://192.168.4.1` öffnen.
+1. Compile the sketch.
+2. Upload it to the D1 mini Pro.
+3. Open the serial monitor at 115200 baud.
+4. Check that `ESP-IR started` appears.
+5. Connect to `ESP-IR` and open `http://192.168.4.1`.
 
-## Aufnahme-Test
+## Recording test
 
-1. Slot 1 auswählen.
-2. **IR-Signal aufnehmen** drücken.
-3. Eine Fernbedienungstaste in Richtung Empfänger drücken.
-4. Prüfen, ob Protokoll, Frequenz und Impulszahl angezeigt werden.
-5. **Signal dauerhaft speichern** drücken.
+1. Select slot 1.
+2. Press **Record IR signal**.
+3. Press a remote control button toward the receiver.
+4. Check that the protocol, frequency, and pulse count are displayed.
+5. Press **Save signal permanently**.
 
-## Speicher-Test
+## Storage test
 
-1. Einen anderen Slot auswählen.
-2. Zurück auf Slot 1 wechseln.
-3. Prüfen, ob das gespeicherte Signal wieder geladen wird.
-4. ESP8266 neu starten.
-5. Slot 1 erneut öffnen und prüfen, ob das Signal noch vorhanden ist.
+1. Select another slot.
+2. Switch back to slot 1.
+3. Check that the saved signal is loaded again.
+4. Restart the ESP8266.
+5. Open slot 1 again and check that the signal is still present.
 
-## Sende-Test
+## Transmission test
 
-1. Das Zielgerät auf die IR-LED ausrichten.
-2. **Gespeichertes Signal senden** drücken.
-3. Das Zielgerät muss reagieren, als wäre die Fernbedienungstaste ungefähr zwei Sekunden gehalten worden.
-4. Bei schlechtem Empfang Abstand und Ausrichtung prüfen.
+1. Point the target device at the IR LED.
+2. Press **Send saved signal**.
+3. The target device must react as if the remote control button had been held for approximately two seconds.
+4. If reception is poor, check the distance and alignment.
 
-## Fehlerbehebung
+## Troubleshooting
 
-| Problem | Prüfung |
+| Problem | Check |
 |---|---|
-| WLAN erscheint nicht | Reset drücken, seriellen Monitor prüfen, Versorgung kontrollieren |
-| Aufnahme bleibt leer | Empfänger-Pinfolge, GND und Abstand zur Fernbedienung prüfen |
-| Signal wird gespeichert, Gerät reagiert aber nicht | LED-Polung, Transistor-Pinfolge, Vorwiderstand und Ausrichtung prüfen |
-| Nur kurze Aktion statt Haltefunktion | Zielgerät kann Wiederholungen anders auswerten; Raw-Signal neu aufnehmen |
-| Slots sind nach Update leer | Signal neu aufnehmen; alte Slot-Dateien können inkompatibel sein |
-| Kompilierfehler mit `IRrecv`/`IRsend` | ESP8266-Board und `IRremoteESP8266`-Bibliothek prüfen |
-
+| Wi-Fi network does not appear | Press reset, check the serial monitor, and verify the power supply |
+| Recording remains empty | Check receiver pin order, GND, and distance to the remote control |
+| Signal is saved but the device does not react | Check LED polarity, transistor pin order, series resistor, and alignment |
+| Short action instead of hold function | The target device may interpret repeats differently; record the raw signal again |
+| Slots are empty after an update | Record the signal again; old slot files may be incompatible |
+| Compile error involving `IRrecv`/`IRsend` | Check the ESP8266 board and `IRremoteESP8266` library |

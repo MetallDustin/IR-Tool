@@ -6,31 +6,31 @@
 #include <IRsend.h>
 #include <IRutils.h>
 
-// Anschlüsse des D1 mini Pro. Bei einer anderen Verdrahtung hier ändern.
-const uint16_t IR_RECEIVE_PIN = D5;  // GPIO14: OUT des IR-Empfängers
-const uint16_t IR_SEND_PIN    = D6;  // GPIO12: Basiswiderstand der Sendestufe
+// D1 mini Pro connections. Change these if the wiring is different.
+const uint16_t IR_RECEIVE_PIN = D5;  // GPIO14: IR receiver OUT
+const uint16_t IR_SEND_PIN    = D6;  // GPIO12: base resistor of the IR driver
 
-// Eigenes WLAN des ESP8266. Das Passwort muss mindestens 8 Zeichen lang sein.
-// Für ein anderes WLAN-Namen oder Passwort nur diese beiden Werte ändern.
+// ESP8266 access point. The password must be at least 8 characters long.
+// Change only these two values for a different network name or password.
 const char* AP_SSID = "ESP-IR";
-const char* AP_PASSWORD = "12345678";  // mindestens 8 Zeichen
+const char* AP_PASSWORD = "12345678";  // at least 8 characters
 
-// Maximale Anzahl aufgezeichneter Impulse. Erhöhen benötigt mehr RAM.
+// Maximum number of recorded pulses. Increasing this requires more RAM.
 const uint16_t RAWBUF_SIZE = 1024;
 
-// Anzahl der dauerhaft verfügbaren Speicherplätze.
-// Das Webinterface ist aktuell auf 5 sichtbare Slot-Tasten ausgelegt.
+// Number of permanently available storage slots.
+// The web interface is currently designed for 5 visible slot buttons.
 const uint8_t SLOT_COUNT = 5;
 
-// Sendedauer: 2000 ms = 2 Sekunden. Für z. B. 5 Sekunden auf 5000 ändern.
-// Das Signal wird während dieser Zeit immer wieder als vollständiger IR-Rahmen gesendet.
+// Transmission duration: 2000 ms = 2 seconds. Change to 5000 for 5 seconds.
+// The signal is sent repeatedly as a complete IR frame during this time.
 const uint16_t SEND_DURATION_MS = 2000;
 
-// Pause zwischen zwei IR-Rahmen. Kleiner = häufigere Wiederholung,
-// größer = mehr Abstand. 35 ms entspricht vielen Fernbedienungen gut.
+// Delay between two IR frames. Smaller means more frequent repeats;
+// larger means more spacing. 35 ms works well for many remote controls.
 const uint16_t SEND_GAP_MS = 35;
 
-// Kennung und Größe des Dateikopfs der LittleFS-Slots.
+// Identifier and size of the LittleFS slot header.
 const uint32_t SLOT_MAGIC = 0x49525332;  // "IRS2"
 const size_t SLOT_HEADER_SIZE = sizeof(uint32_t) + sizeof(uint16_t) +
                                 sizeof(uint16_t) + sizeof(uint16_t) +
@@ -41,7 +41,7 @@ uint16_t carrierFrequency = 38;
 bool recording = false;
 bool persistent = false;
 uint8_t activeSlot = 0;
-String protocolName = "unbekannt";
+String protocolName = "unknown";
 decode_type_t decodedType = UNKNOWN;
 uint64_t decodedValue = 0;
 uint16_t decodedBits = 0;
@@ -53,7 +53,7 @@ ESP8266WebServer server(80);
 
 const char MAIN_PAGE[] PROGMEM = R"rawliteral(
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -78,8 +78,8 @@ const char MAIN_PAGE[] PROGMEM = R"rawliteral(
 <body>
   <div class="card">
     <h1>ESP-IR</h1>
-    <p>IR-Signale aufnehmen und wieder senden</p>
-    <div>Speicherplatz:</div>
+    <p>Record and retransmit IR signals</p>
+    <div>Storage slot:</div>
     <div class="slots">
       <button class="slot" id="slot0" onclick="changeSlot(0)">1</button>
       <button class="slot" id="slot1" onclick="changeSlot(1)">2</button>
@@ -87,22 +87,22 @@ const char MAIN_PAGE[] PROGMEM = R"rawliteral(
       <button class="slot" id="slot3" onclick="changeSlot(3)">4</button>
       <button class="slot" id="slot4" onclick="changeSlot(4)">5</button>
     </div>
-    <div id="status">Status wird geladen …</div>
+    <div id="status">Loading status …</div>
     <div id="details"></div>
-    <button id="record" onclick="recordSignal()">IR-Signal aufnehmen</button>
-    <button id="save" onclick="saveSignal()" disabled>Signal dauerhaft speichern</button>
-    <button id="send" onclick="sendSignal()" disabled>Gespeichertes Signal senden</button>
-    <small>Drücke „Aufnehmen“ und anschließend eine Taste auf der Fernbedienung.</small>
+    <button id="record" onclick="recordSignal()">Record IR signal</button>
+    <button id="save" onclick="saveSignal()" disabled>Save signal permanently</button>
+    <button id="send" onclick="sendSignal()" disabled>Send saved signal</button>
+    <small>Press “Record” and then press a button on the remote control.</small>
   </div>
   <script>
     async function update(){
       const s=await (await fetch('/api/status')).json();
       for(let i=0;i<5;i++) document.getElementById('slot'+i).classList.toggle('active',i==s.slot);
-      document.getElementById('status').textContent=s.recording?'Warte auf IR-Signal …':
-        (s.saved?(s.persistent?'Dauerhaft gespeichert':'Aufgenommen, noch nicht dauerhaft gespeichert')+
-        ' ('+s.length+' Impulse)':'Noch kein Signal gespeichert');
+      document.getElementById('status').textContent=s.recording?'Waiting for IR signal …':
+        (s.saved?(s.persistent?'Saved permanently':'Recorded, not saved permanently')+
+        ' ('+s.length+' pulses)':'No signal saved yet');
       document.getElementById('details').textContent=s.saved?
-        'Protokoll: '+s.protocol+'  ·  Frequenz: '+s.frequency+' kHz  ·  Länge: '+s.length+' Impulse  ·  Sendedauer: '+(s.sendDuration/1000)+' s':'';
+        'Protocol: '+s.protocol+'  ·  Frequency: '+s.frequency+' kHz  ·  Length: '+s.length+' pulses  ·  Transmission duration: '+(s.sendDuration/1000)+' s':'';
       document.getElementById('send').disabled=!s.saved||s.recording;
       document.getElementById('save').disabled=!s.saved||s.recording||s.persistent;
       document.getElementById('record').disabled=s.recording;
@@ -138,13 +138,13 @@ void handleStatus() {
 void handleRecord() {
   rawLength = 0;
   persistent = false;
-  protocolName = "unbekannt";
+  protocolName = "unknown";
   decodedType = UNKNOWN;
   decodedValue = 0;
   decodedBits = 0;
   recording = true;
-  Serial.println("Warte auf IR-Signal ...");
-  server.send(200, "text/plain", "Aufnahme gestartet");
+  Serial.println("Waiting for IR signal ...");
+  server.send(200, "text/plain", "Recording started");
 }
 
 String slotPath(uint8_t slot) {
@@ -210,38 +210,38 @@ void saveSlot(uint8_t slot) {
 
 void handleSlot() {
   if (!server.hasArg("n")) {
-    server.send(400, "text/plain", "Slot fehlt");
+    server.send(400, "text/plain", "Slot is missing");
     return;
   }
   int requested = server.arg("n").toInt();
   if (requested < 0 || requested >= SLOT_COUNT) {
-    server.send(400, "text/plain", "Ungueltiger Slot");
+    server.send(400, "text/plain", "Invalid slot");
     return;
   }
   activeSlot = requested;
   rawLength = 0;
-  protocolName = "unbekannt";
+  protocolName = "unknown";
   persistent = loadSlot(activeSlot);
-  server.send(200, "text/plain", "Slot geladen");
+  server.send(200, "text/plain", "Slot loaded");
 }
 
 void handleSave() {
   if (rawLength == 0) {
-    server.send(400, "text/plain", "Kein Signal zum Speichern");
+    server.send(400, "text/plain", "No signal to save");
     return;
   }
   saveSlot(activeSlot);
-  Serial.println("IR-Signal dauerhaft im Slot gespeichert.");
-  server.send(200, "text/plain", "Signal dauerhaft gespeichert");
+  Serial.println("IR signal saved permanently in slot.");
+  server.send(200, "text/plain", "Signal saved permanently");
 }
 
 void handleSend() {
   if (rawLength == 0) {
-    server.send(400, "text/plain", "Kein Signal gespeichert");
+    server.send(400, "text/plain", "No signal saved");
     return;
   }
 
-  Serial.println("Sende IR-Signal ...");
+  Serial.println("Sending IR signal ...");
   uint32_t sendStart = millis();
   do {
     bool nativeSent = true;
@@ -266,7 +266,7 @@ void handleSend() {
       delay(SEND_GAP_MS);
     }
   } while (millis() - sendStart < SEND_DURATION_MS);
-  server.send(200, "text/plain", "Signal " + String(SEND_DURATION_MS) + " ms gesendet");
+  server.send(200, "text/plain", "Signal sent for " + String(SEND_DURATION_MS) + " ms");
 }
 
 void setup() {
@@ -276,7 +276,7 @@ void setup() {
   irrecv.enableIRIn();
   irsend.begin();
   if (!LittleFS.begin()) {
-    Serial.println("Fehler: LittleFS konnte nicht gestartet werden.");
+    Serial.println("Error: LittleFS could not be started.");
   }
   loadSlot(activeSlot);
 
@@ -292,12 +292,12 @@ void setup() {
   server.begin();
 
   Serial.println();
-  Serial.println("ESP-IR gestartet");
-  Serial.print("WLAN: ");
+  Serial.println("ESP-IR started");
+  Serial.print("Wi-Fi: ");
   Serial.println(AP_SSID);
-  Serial.print("Passwort: ");
+  Serial.print("Password: ");
   Serial.println(AP_PASSWORD);
-  Serial.println("Webinterface: http://192.168.4.1");
+  Serial.println("Web interface: http://192.168.4.1");
 }
 
 void loop() {
@@ -317,10 +317,9 @@ void loop() {
       decodedType = results.decode_type;
       decodedValue = results.value;
       decodedBits = results.bits;
-      Serial.println("IR-Signal gespeichert.");
+      Serial.println("IR signal recorded.");
     }
 
     irrecv.resume();
   }
 }
-
